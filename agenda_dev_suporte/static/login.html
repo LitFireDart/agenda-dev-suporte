@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevAgenda - Login do Sistema</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white">
+  
+  <!-- Fundo com gradiente sutil cinza claro -->
+  <div class="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100/50 via-slate-100 to-slate-200 -z-10"></div>
+
+  <div class="w-full max-w-md">
+    
+    <!-- Logo e Cabeçalho -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 text-blue-600 mb-4 shadow-md">
+        <i data-lucide="terminal" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center justify-center gap-2">
+        Dev<span class="text-blue-600">Agenda</span>
+      </h1>
+      <p class="text-slate-500 text-sm mt-2 font-medium">
+        Gestão de Compromissos, Suporte & Manutenções
+      </p>
+    </div>
+
+    <!-- Card de Login -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-xl relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400"></div>
+
+      <div id="alert-box" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border"></div>
+
+      <form id="login-form" class="space-y-5">
+        <div>
+          <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+            Usuário
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="user" class="w-5 h-5"></i>
+            </div>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              required
+              autocomplete="username"
+              placeholder="Ex: admin"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-11 pr-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+            >
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+              Senha de Acesso
+            </label>
+          </div>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="lock" class="w-5 h-5"></i>
+            </div>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              required
+              autocomplete="current-password"
+              placeholder="••••••••"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-11 pr-11 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium"
+            >
+            <button 
+              type="button" 
+              id="toggle-pwd" 
+              class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+            >
+              <i data-lucide="eye" id="pwd-icon" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          id="btn-submit"
+          class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all duration-200 text-sm mt-2 focus:ring-2 focus:ring-blue-400"
+        >
+          <span>Entrar no Sistema</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <!-- Dica de Acesso Padrão -->
+      <div class="mt-6 pt-6 border-t border-slate-200">
+        <div class="flex items-center justify-between text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200">
+          <div>
+            <span class="text-slate-500 block">Acesso Inicial Padrão:</span>
+            <span class="font-mono font-bold text-slate-800">admin / admin123</span>
+          </div>
+          <button 
+            type="button" 
+            id="btn-fill-demo" 
+            class="text-blue-600 hover:text-blue-800 font-semibold text-xs underline"
+          >
+            Preencher
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="text-center mt-6 text-xs text-slate-500 font-medium">
+      <p>DevAgenda &bull; Desenvolvido para Programadores e Suporte a Sistemas</p>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Toggle senha
+    const togglePwd = document.getElementById('toggle-pwd');
+    const pwdInput = document.getElementById('password');
+    const pwdIcon = document.getElementById('pwd-icon');
+
+    togglePwd.addEventListener('click', () => {
+      const isPassword = pwdInput.type === 'password';
+      pwdInput.type = isPassword ? 'text' : 'password';
+      pwdIcon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+      lucide.createIcons();
+    });
+
+    // Preencher credenciais padrão
+    document.getElementById('btn-fill-demo').addEventListener('click', () => {
+      document.getElementById('username').value = 'admin';
+      document.getElementById('password').value = 'admin123';
+    });
+
+    // Submissão do login
+    const form = document.getElementById('login-form');
+    const alertBox = document.getElementById('alert-box');
+    const btnSubmit = document.getElementById('btn-submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.className = 'hidden';
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span> Autenticando...`;
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || 'Falha ao autenticar.');
+        }
+
+        // Salvar token e dados do usuário
+        localStorage.setItem('devagenda_token', data.access_token);
+        localStorage.setItem('devagenda_user', JSON.stringify(data.user));
+
+        alertBox.className = 'mb-6 p-4 rounded-xl text-sm font-medium border bg-emerald-50 border-emerald-300 text-emerald-800 block';
+        alertBox.textContent = 'Login efetuado com sucesso! Redirecionando...';
+
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
+
+      } catch (err) {
+        alertBox.className = 'mb-6 p-4 rounded-xl text-sm font-medium border bg-rose-50 border-rose-300 text-rose-800 block';
+        alertBox.textContent = err.message || 'Erro ao comunicar com o servidor.';
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = `<span>Entrar no Sistema</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+        lucide.createIcons();
+      }
+    });
+
+    // Se já estiver logado, redireciona para a home
+    if (localStorage.getItem('devagenda_token')) {
+      fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('devagenda_token')}` }
+      }).then(res => {
+        if (res.ok) window.location.href = '/';
+      }).catch(() => {});
+    }
+  </script>
+</body>
+</html>
