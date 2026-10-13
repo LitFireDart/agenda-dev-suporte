@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevAgenda - Gestão de Compromissos & Suporte</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen selection:bg-blue-600 selection:text-white flex flex-col">
+
+  <!-- Header Superior -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo e Título -->
+      <div class="flex items-center gap-6">
+        <a href="/" class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-xs">
+            <i data-lucide="terminal" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-lg font-black tracking-tight text-slate-900 flex items-center gap-1">
+              Dev<span class="text-blue-600">Agenda</span>
+            </span>
+            <span class="hidden sm:inline-block text-[10px] text-slate-500 font-mono -mt-1 block">dev & support tracker</span>
+          </div>
+        </a>
+
+        <!-- Abas de Navegação -->
+        <nav class="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button 
+            id="tab-calendar-btn" 
+            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm transition-all"
+          >
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            <span>Calendário</span>
+          </button>
+          <button 
+            id="tab-list-btn" 
+            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white transition-all"
+          >
+            <i data-lucide="list-filter" class="w-3.5 h-3.5"></i>
+            <span>Lista & Pesquisa</span>
+          </button>
+          <button 
+            id="tab-history-btn" 
+            class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white transition-all"
+          >
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
+            <span>Histórico & Auditoria</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Ações do Usuário e Botão Novo -->
+      <div class="flex items-center gap-3">
+        
+        <button 
+          id="btn-new-appointment"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-3.5 rounded-xl shadow-md shadow-blue-600/20 transition-all duration-150"
+        >
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Novo Compromisso</span>
+          <span class="sm:hidden">Novo</span>
+        </button>
+
+        <!-- Divisor -->
+        <div class="h-6 w-px bg-slate-200"></div>
+
+        <!-- Usuário / Perfil -->
+        <div class="flex items-center gap-2">
+          <button 
+            id="btn-open-profile"
+            class="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl hover:bg-slate-100 transition-colors text-left border border-transparent hover:border-slate-200"
+            title="Ver Perfil e Trocar Senha"
+          >
+            <div id="user-avatar" class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200 text-blue-700 font-bold text-xs flex items-center justify-center font-mono">
+              AD
+            </div>
+            <div class="hidden lg:block">
+              <span id="user-name" class="block text-xs font-bold text-slate-800 truncate max-w-[220px]">Administrador</span>
+              <span id="user-role" class="block text-[10px] text-slate-500 font-mono">ADMIN</span>
+            </div>
+          </button>
+
+          <button 
+            id="btn-logout"
+            class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+            title="Sair do Sistema"
+          >
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Navegação Mobile de Abas -->
+    <div class="md:hidden flex items-center justify-around border-t border-slate-200 bg-white p-1.5 text-xs font-semibold">
+      <button onclick="document.getElementById('tab-calendar-btn').click()" class="text-blue-600 flex items-center gap-1 py-1">
+        <i data-lucide="calendar" class="w-4 h-4"></i> Calendário
+      </button>
+      <button onclick="document.getElementById('tab-list-btn').click()" class="text-slate-600 flex items-center gap-1 py-1">
+        <i data-lucide="list-filter" class="w-4 h-4"></i> Lista
+      </button>
+      <button onclick="document.getElementById('tab-history-btn').click()" class="text-slate-600 flex items-center gap-1 py-1">
+        <i data-lucide="history" class="w-4 h-4"></i> Histórico
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Cards de Métricas / Indicadores do Topo -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      
+      <!-- Total -->
+      <div class="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-xs hover:border-slate-300 transition-colors">
+        <div class="flex items-center justify-between text-slate-500 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider">Total</span>
+          <i data-lucide="folder-kanban" class="w-4 h-4 text-slate-400"></i>
+        </div>
+        <div id="stat-total" class="text-2xl font-black text-slate-900 font-mono">0</div>
+      </div>
+
+      <!-- Pendentes -->
+      <div class="bg-white border border-amber-200 p-3.5 rounded-2xl shadow-xs hover:border-amber-300 transition-colors bg-amber-50/20">
+        <div class="flex items-center justify-between text-amber-700 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider">Pendentes</span>
+          <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i>
+        </div>
+        <div id="stat-pending" class="text-2xl font-black text-amber-700 font-mono">0</div>
+      </div>
+
+      <!-- Em Andamento -->
+      <div class="bg-white border border-blue-200 p-3.5 rounded-2xl shadow-xs hover:border-blue-300 transition-colors bg-blue-50/20">
+        <div class="flex items-center justify-between text-blue-700 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider">Em Andamento</span>
+          <i data-lucide="play" class="w-4 h-4 text-blue-500"></i>
+        </div>
+        <div id="stat-in-progress" class="text-2xl font-black text-blue-700 font-mono">0</div>
+      </div>
+
+      <!-- Concluídos -->
+      <div class="bg-white border border-emerald-200 p-3.5 rounded-2xl shadow-xs hover:border-emerald-300 transition-colors bg-emerald-50/20">
+        <div class="flex items-center justify-between text-emerald-700 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider">Concluídos</span>
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+        </div>
+        <div id="stat-completed" class="text-2xl font-black text-emerald-700 font-mono">0</div>
+      </div>
+
+      <!-- Urgentes -->
+      <div class="bg-white border border-rose-200 p-3.5 rounded-2xl shadow-xs hover:border-rose-300 transition-colors bg-rose-50/30">
+        <div class="flex items-center justify-between text-rose-700 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider">Urgentes</span>
+          <i data-lucide="alert-octagon" class="w-4 h-4 pulse-urgent text-rose-500"></i>
+        </div>
+        <div id="stat-urgent" class="text-2xl font-black text-rose-700 font-mono">0</div>
+      </div>
+
+      <!-- Hoje -->
+      <div class="bg-white border border-indigo-200 p-3.5 rounded-2xl shadow-xs hover:border-indigo-300 transition-colors bg-indigo-50/20">
+        <div class="flex items-center justify-between text-indigo-700 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider">Para Hoje</span>
+          <i data-lucide="calendar-check" class="w-4 h-4 text-indigo-500"></i>
+        </div>
+        <div id="stat-today" class="text-2xl font-black text-indigo-700 font-mono">0</div>
+      </div>
+
+    </section>
+
+    <!-- Barra de Pesquisa e Filtros Rápidos -->
+    <section class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+        
+        <!-- Campo de Pesquisa Geral -->
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </div>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Pesquisar por chamado, sistema, descrição ou erro..." 
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+          >
+        </div>
+
+        <!-- Filtros Suspensos -->
+        <div class="flex flex-wrap items-center gap-2">
+          
+          <!-- Filtro Status -->
+          <select id="filter-status" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+            <option value="Todos">Status: Todos</option>
+            <option value="Pendente">🟡 Pendente</option>
+            <option value="Em Andamento">🔵 Em Andamento</option>
+            <option value="Aguardando">🟣 Aguardando</option>
+            <option value="Concluído">🟢 Concluído</option>
+            <option value="Cancelado">⚪ Cancelado</option>
+          </select>
+
+          <!-- Filtro Categoria -->
+          <select id="filter-category" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+            <option value="Todas">Tipo: Todos</option>
+            <option value="Suporte">Suporte Técnico</option>
+            <option value="Bugfix">Bugfix / Correção</option>
+            <option value="Deploy">Deploy / Implantação</option>
+            <option value="Manutenção">Manutenção / Servidor</option>
+            <option value="Desenvolvimento">Desenvolvimento</option>
+            <option value="Reunião">Reunião / Alinhamento</option>
+          </select>
+
+          <!-- Filtro Prioridade -->
+          <select id="filter-priority" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+            <option value="Todas">Prioridade: Todas</option>
+            <option value="Baixa">Baixa</option>
+            <option value="Normal">Normal</option>
+            <option value="Alta">Alta</option>
+            <option value="Urgente">Urgente</option>
+          </select>
+
+          <!-- Filtro Sistema -->
+          <select id="filter-system" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white max-w-[160px]">
+            <option value="Todos">Todos os Sistemas</option>
+          </select>
+
+          <!-- Limpar Filtros -->
+          <button 
+            id="btn-reset-filters" 
+            class="p-2 text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-xl transition-colors"
+            title="Limpar todos os filtros"
+          >
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABA 1: Visão Calendário -->
+    <section id="view-calendar-section" class="space-y-4">
+      
+      <!-- Controles do Calendário (Mês/Semana, Navegação, Título) -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-slate-200 p-3 rounded-2xl shadow-xs">
+        
+        <!-- Navegação de Datas -->
+        <div class="flex items-center gap-2">
+          <button 
+            id="cal-prev-btn" 
+            class="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200"
+            title="Anterior"
+          >
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+
+          <button 
+            id="cal-today-btn" 
+            class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200 shadow-2xs"
+          >
+            Hoje
+          </button>
+
+          <button 
+            id="cal-next-btn" 
+            class="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200"
+            title="Próximo"
+          >
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Título Dinâmico do Período -->
+          <h2 id="cal-title" class="text-base sm:text-lg font-bold text-slate-900 ml-2">
+            Carregando...
+          </h2>
+        </div>
+
+        <!-- Seletor de Modo: Mês vs Semana -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button 
+            id="cal-mode-month" 
+            class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-xs transition-all"
+          >
+            Mês
+          </button>
+          <button 
+            id="cal-mode-week" 
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all"
+          >
+            Semana
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Container do Calendário -->
+      <div id="calendar-container" class="w-full">
+        <!-- Injetado dinamicamente via calendar.js -->
+      </div>
+
+    </section>
+
+    <!-- ABA 2: Visão em Lista / Tabela -->
+    <section id="view-list-section" class="hidden space-y-4">
+      <div id="list-container">
+        <!-- Injetado dinamicamente via app.js -->
+      </div>
+      
+      <!-- Estado Vazio -->
+      <div id="list-empty-state" class="hidden text-center py-16 text-slate-400 bg-white border border-slate-200 rounded-2xl shadow-xs">
+        <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-40 text-slate-400"></i>
+        <p class="text-base font-semibold text-slate-700">Nenhum compromisso encontrado.</p>
+        <p class="text-xs text-slate-500 mt-1">Tente ajustar seus filtros ou cadastre um novo agendamento.</p>
+      </div>
+    </section>
+
+    <!-- ABA 3: Visão de Histórico e Auditoria -->
+    <section id="view-history-section" class="hidden space-y-4">
+      
+      <!-- Controles do Histórico -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i>
+            Trilha de Auditoria & Linha do Tempo
+          </h3>
+          <p class="text-xs text-slate-500">Registro cronológico de manutenções, mudanças de status e chamados atendidos.</p>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input 
+            type="text" 
+            id="history-search-input" 
+            placeholder="Buscar no histórico..." 
+            class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+          >
+          <select id="history-filter-action" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="TODOS">Todas as Ações</option>
+            <option value="CONCLUSAO">Conclusões</option>
+            <option value="STATUS">Mudanças de Status</option>
+            <option value="CRIACAO">Criações</option>
+            <option value="EDICAO">Alterações</option>
+            <option value="EXCLUSAO">Exclusões</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Container do Histórico -->
+      <div id="history-container" class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+        <!-- Injetado dinamicamente -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: Criar / Editar Compromisso -->
+  <div id="modal-appointment" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 modal-backdrop hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl animate-scale-up max-h-[90vh] overflow-y-auto">
+      
+      <!-- Cabeçalho do Modal -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-5">
+        <h3 id="modal-appointment-title" class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="calendar-plus" class="w-5 h-5 text-blue-600"></i>
+          Novo Compromisso
+        </h3>
+        <button id="btn-close-appointment-modal" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Formulário -->
+      <form id="form-appointment" class="space-y-4">
+        
+        <!-- Título -->
+        <div>
+          <label for="app-title" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            Título da Atividade / Chamado *
+          </label>
+          <input 
+            type="text" 
+            id="app-title" 
+            required 
+            placeholder="Ex: Suporte NF-e SEFAZ ou Deploy versão 2.0"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+          >
+        </div>
+
+        <!-- Sistema e Categoria -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="app-system" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Sistema / Cliente / Projeto *
+            </label>
+            <input 
+              type="text" 
+              id="app-system" 
+              list="systems-datalist" 
+              required 
+              placeholder="Ex: ERP Corporativo"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+            >
+            <datalist id="systems-datalist"></datalist>
+          </div>
+
+          <div>
+            <label for="app-category" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Tipo de Atividade
+            </label>
+            <select id="app-category" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+              <option value="Suporte">Suporte Técnico</option>
+              <option value="Bugfix">Bugfix / Correção de Erro</option>
+              <option value="Deploy">Deploy / Implantação</option>
+              <option value="Manutenção">Manutenção / Servidor / Backup</option>
+              <option value="Desenvolvimento">Desenvolvimento / Feature</option>
+              <option value="Reunião">Reunião / Alinhamento</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Prioridade e Status -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="app-priority" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Prioridade
+            </label>
+            <select id="app-priority" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+              <option value="Normal">Normal</option>
+              <option value="Baixa">Baixa</option>
+              <option value="Alta">Alta</option>
+              <option value="Urgente">Urgente / Crítica</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="app-status" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Status Inicial
+            </label>
+            <select id="app-status" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+              <option value="Pendente">🟡 Pendente</option>
+              <option value="Em Andamento">🔵 Em Andamento</option>
+              <option value="Aguardando">🟣 Aguardando Cliente/Deploy</option>
+              <option value="Concluído">🟢 Concluído</option>
+              <option value="Cancelado">⚪ Cancelado</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Datas e Horários -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Agendamento</span>
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-semibold">
+              <input type="checkbox" id="app-is-all-day" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+              <span>Dia Inteiro</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="app-start-date" class="block text-[11px] font-semibold text-slate-600 mb-1">Data Início *</label>
+              <input type="date" id="app-start-date" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900">
+            </div>
+            <div>
+              <label for="app-start-time" class="block text-[11px] font-semibold text-slate-600 mb-1">Horário Início</label>
+              <input type="time" id="app-start-time" value="09:00" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="app-end-date" class="block text-[11px] font-semibold text-slate-600 mb-1">Data Término</label>
+              <input type="date" id="app-end-date" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900">
+            </div>
+            <div>
+              <label for="app-end-time" class="block text-[11px] font-semibold text-slate-600 mb-1">Horário Término</label>
+              <input type="time" id="app-end-time" value="10:00" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono">
+            </div>
+          </div>
+        </div>
+
+        <!-- Descrição -->
+        <div>
+          <label for="app-description" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            Descrição Técnica / Anotações
+          </label>
+          <textarea 
+            id="app-description" 
+            rows="3" 
+            placeholder="Detalhes do chamado, passos para reproduzir o erro, comandos de servidor ou observações..."
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white font-sans"
+          ></textarea>
+        </div>
+
+        <!-- Link Externo -->
+        <div>
+          <label for="app-external-link" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            Link Externo (Ticket, Jira, GitHub, Servidor)
+          </label>
+          <input 
+            type="url" 
+            id="app-external-link" 
+            placeholder="https://..."
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+          >
+        </div>
+
+        <!-- Solução Técnica (Condicional se concluído) -->
+        <div id="field-resolution-wrapper" class="hidden">
+          <label for="app-resolution-notes" class="block text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1.5">
+            Solução Técnica & Resolução
+          </label>
+          <textarea 
+            id="app-resolution-notes" 
+            rows="2" 
+            placeholder="Descreva o que foi realizado para resolver ou finalizar a atividade..."
+            class="w-full bg-emerald-50 border border-emerald-300 rounded-xl px-4 py-2 text-xs text-emerald-950 placeholder-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-sans"
+          ></textarea>
+        </div>
+
+        <!-- Botões do Modal -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+          <button 
+            type="button" 
+            id="btn-cancel-appointment" 
+            class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="px-5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 transition-all"
+          >
+            Salvar Agendamento
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Visualizar Detalhes & Histórico -->
+  <div id="modal-details" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 modal-backdrop hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl animate-scale-up max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+          Detalhes da Atividade
+        </h3>
+        <button id="btn-close-details-modal" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Conteúdo Injetado via JS -->
+      <div id="details-content"></div>
+
+      <!-- Rodapé de Ações Rápidas -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-6 mt-6 border-t border-slate-200">
+        
+        <div class="flex items-center gap-2">
+          <button 
+            id="btn-quick-start" 
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-600 border border-blue-200 hover:border-blue-600 text-blue-700 hover:text-white transition-colors"
+          >
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            <span>Iniciar</span>
+          </button>
+
+          <button 
+            id="btn-quick-complete" 
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-600 border border-emerald-200 hover:border-emerald-600 text-emerald-700 hover:text-white transition-colors"
+          >
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Concluir</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button 
+            id="btn-edit-from-details" 
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors border border-slate-200"
+          >
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>Editar</span>
+          </button>
+
+          <button 
+            id="btn-delete-from-details" 
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-600 border border-rose-200 hover:border-rose-600 text-rose-700 hover:text-white transition-colors"
+          >
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Excluir</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Conclusão Rápida com Nota de Solução -->
+  <div id="modal-quick-complete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 modal-backdrop hidden">
+    <div class="bg-white border border-emerald-300 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-scale-up">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center">
+          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Concluir Atividade</h3>
+          <p class="text-xs text-slate-500">Registre a solução ou resumo do atendimento</p>
+        </div>
+      </div>
+
+      <form id="form-quick-complete" class="space-y-4">
+        <div>
+          <label for="quick-complete-notes" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            O que foi feito? (Solução Técnica)
+          </label>
+          <textarea 
+            id="quick-complete-notes" 
+            rows="3" 
+            placeholder="Ex: Corrigido o endpoint na API, deploy efetuado e conferido com o cliente."
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white font-sans"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button 
+            type="button" 
+            id="btn-cancel-quick-complete" 
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900"
+          >
+            Voltar
+          </button>
+          <button 
+            type="submit" 
+            class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/30"
+          >
+            Confirmar Conclusão
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Perfil do Usuário & Troca de Senha -->
+  <div id="modal-profile" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 modal-backdrop hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-scale-up">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
+          Segurança & Perfil
+        </h3>
+        <button id="btn-close-profile-modal" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-5 text-xs">
+        <span id="profile-user-name" class="font-bold text-slate-900 block text-sm">Administrador</span>
+        <span id="profile-user-role" class="text-slate-500 font-mono mt-0.5 block font-semibold">Função: admin</span>
+      </div>
+
+      <!-- Formulário de Alteração de Nome de Exibição -->
+      <form id="form-update-profile" class="space-y-3 mb-6 pb-6 border-b border-slate-200">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <i data-lucide="user-pen" class="w-3.5 h-3.5 text-blue-600"></i>
+          <span>Alterar Nome de Exibição</span>
+        </h4>
+
+        <div>
+          <label for="profile-name-input" class="block text-[11px] font-semibold text-slate-600 mb-1">Seu Nome *</label>
+          <input 
+            type="text" 
+            id="profile-name-input" 
+            required 
+            minlength="2"
+            placeholder="Ex: José Silva (Dev/Suporte)" 
+            class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+          >
+        </div>
+
+        <div>
+          <label for="profile-email-input" class="block text-[11px] font-semibold text-slate-600 mb-1">E-mail (opcional)</label>
+          <input 
+            type="email" 
+            id="profile-email-input" 
+            placeholder="dev@empresa.com" 
+            class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+          >
+        </div>
+
+        <div>
+          <button 
+            type="submit" 
+            id="btn-save-profile-name"
+            class="w-full py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all flex items-center justify-center gap-1.5"
+          >
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Salvar Novo Nome</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Formulário de Alteração de Senha -->
+      <form id="form-change-password" class="space-y-4">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <i data-lucide="key-round" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span>Alterar Senha de Acesso</span>
+        </h4>
+
+        <div>
+          <label for="current-pwd" class="block text-[11px] font-semibold text-slate-600 mb-1">Senha Atual *</label>
+          <input type="password" id="current-pwd" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:bg-white">
+        </div>
+
+        <div>
+          <label for="new-pwd" class="block text-[11px] font-semibold text-slate-600 mb-1">Nova Senha * (mínimo 6 caracteres)</label>
+          <input type="password" id="new-pwd" required minlength="6" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:bg-white">
+        </div>
+
+        <div>
+          <label for="confirm-pwd" class="block text-[11px] font-semibold text-slate-600 mb-1">Confirmar Nova Senha *</label>
+          <input type="password" id="confirm-pwd" required minlength="6" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:bg-white">
+        </div>
+
+        <div class="pt-2">
+          <button 
+            type="submit" 
+            class="w-full py-2.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all"
+          >
+            Atualizar Senha
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Toast Floating Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Scripts -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/calendar.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
