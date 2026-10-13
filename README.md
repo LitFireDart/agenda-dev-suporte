@@ -38,7 +38,7 @@ Altere a senha padrão depois de entrar no sistema.
 
 ## Erros comuns
 
-Caso tenha dado algum erro na hora da inicialização, confira antes se o Uvicorn ou o Python foi instaçado corretamente, pois esses dois são necessários pro sistema funcionar
+Caso tenha dado algum erro na hora da inicialização, confira antes se o Uvicorn ou o Python foi instalado corretamente, pois esses dois são necessários pro sistema funcionar
 
 ## Instalando o Uvicorn
 
