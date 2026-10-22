@@ -1,15 +1,12 @@
-/**
- * Controlador Principal do Frontend DevAgenda
- */
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Verificação de Autenticação
+
   const token = API.getToken();
   if (!token) {
     window.location.href = '/login';
     return;
   }
 
-  // 2. Estado Global
   const state = {
     user: null,
     currentTab: 'calendar', // 'calendar' | 'list' | 'history'
@@ -30,14 +27,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     viewingAppointmentId: null
   };
 
-  // 3. Elementos do DOM
   const dom = {
     userName: document.getElementById('user-name'),
     userRole: document.getElementById('user-role'),
     userAvatar: document.getElementById('user-avatar'),
     btnLogout: document.getElementById('btn-logout'),
     
-    // Stats Cards
     statTotal: document.getElementById('stat-total'),
     statPending: document.getElementById('stat-pending'),
     statInProgress: document.getElementById('stat-in-progress'),
@@ -45,7 +40,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     statUrgent: document.getElementById('stat-urgent'),
     statToday: document.getElementById('stat-today'),
 
-    // Navegação de Abas
     tabCalendarBtn: document.getElementById('tab-calendar-btn'),
     tabListBtn: document.getElementById('tab-list-btn'),
     tabHistoryBtn: document.getElementById('tab-history-btn'),
@@ -53,7 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     viewListSection: document.getElementById('view-list-section'),
     viewHistorySection: document.getElementById('view-history-section'),
 
-    // Controles do Calendário
     calPrevBtn: document.getElementById('cal-prev-btn'),
     calNextBtn: document.getElementById('cal-next-btn'),
     calTodayBtn: document.getElementById('cal-today-btn'),
@@ -62,7 +55,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     calModeWeekBtn: document.getElementById('cal-mode-week'),
     calendarContainer: document.getElementById('calendar-container'),
 
-    // Filtros e Pesquisa
     searchInput: document.getElementById('search-input'),
     filterStatus: document.getElementById('filter-status'),
     filterCategory: document.getElementById('filter-category'),
@@ -70,26 +62,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     filterSystem: document.getElementById('filter-system'),
     btnResetFilters: document.getElementById('btn-reset-filters'),
 
-    // Botões de Ação Global
     btnNewAppointment: document.getElementById('btn-new-appointment'),
 
-    // Lista de Resultados
     listContainer: document.getElementById('list-container'),
     listEmptyState: document.getElementById('list-empty-state'),
 
-    // Histórico
     historyContainer: document.getElementById('history-container'),
     historyFilterAction: document.getElementById('history-filter-action'),
     historySearchInput: document.getElementById('history-search-input'),
 
-    // Modal de Criar/Editar
     modalAppointment: document.getElementById('modal-appointment'),
     modalAppointmentTitle: document.getElementById('modal-appointment-title'),
     formAppointment: document.getElementById('form-appointment'),
     btnCloseAppointmentModal: document.getElementById('btn-close-appointment-modal'),
     btnCancelAppointment: document.getElementById('btn-cancel-appointment'),
 
-    // Campos do Formulário
     inputTitle: document.getElementById('app-title'),
     inputSystem: document.getElementById('app-system'),
     inputCategory: document.getElementById('app-category'),
@@ -106,7 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     fieldResolutionWrapper: document.getElementById('field-resolution-wrapper'),
     datalistSystems: document.getElementById('systems-datalist'),
 
-    // Modal de Detalhes
     modalDetails: document.getElementById('modal-details'),
     btnCloseDetailsModal: document.getElementById('btn-close-details-modal'),
     detailsContent: document.getElementById('details-content'),
@@ -115,13 +101,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnQuickStart: document.getElementById('btn-quick-start'),
     btnQuickComplete: document.getElementById('btn-quick-complete'),
 
-    // Modal de Conclusão Rápida
     modalQuickComplete: document.getElementById('modal-quick-complete'),
     formQuickComplete: document.getElementById('form-quick-complete'),
     quickCompleteNotes: document.getElementById('quick-complete-notes'),
     btnCancelQuickComplete: document.getElementById('btn-cancel-quick-complete'),
 
-    // Modal Perfil / Senha
     btnOpenProfile: document.getElementById('btn-open-profile'),
     modalProfile: document.getElementById('modal-profile'),
     btnCloseProfileModal: document.getElementById('btn-close-profile-modal'),
@@ -136,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     toastContainer: document.getElementById('toast-container')
   };
 
-  // 4. Inicializar Calendário
   const calendar = new DevCalendar({
     container: dom.calendarContainer,
     viewMode: state.viewMode,
@@ -224,13 +207,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       dom.datalistSystems.innerHTML = '';
 
       systems.forEach(sys => {
-        // Opção no filtro
+
         const opt = document.createElement('option');
         opt.value = sys;
         opt.textContent = sys;
         dom.filterSystem.appendChild(opt);
 
-        // Opção no datalist do form
         const dlOpt = document.createElement('option');
         dlOpt.value = sys;
         dom.datalistSystems.appendChild(dlOpt);
@@ -248,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const filters = { ...state.filters };
       if (state.currentTab === 'calendar') {
-        // No calendário, se não tiver busca ou status específico, foca no mês para otimizar
+
         if (!filters.search && filters.status === 'Todos' && filters.system_client === 'Todos') {
           filters.month = calendar.getMonthString();
         } else {
@@ -285,7 +267,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     dom.calTitle.textContent = calendar.getHeaderTitle();
   }
 
-  // 7. Renderização da Visão em Lista / Tabela
   function renderListView(appointments) {
     if (!dom.listContainer) return;
 
@@ -387,7 +368,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // 8. Renderização do Histórico e Auditoria
   function renderHistoryView(logs) {
     if (!dom.historyContainer) return;
 
@@ -458,12 +438,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // 9. Modais: Criação e Edição
   function openAppointmentModal(app = null, defaultDate = null) {
     state.editingAppointmentId = app ? app.id : null;
     dom.modalAppointmentTitle.textContent = app ? 'Editar Atividade / Suporte' : 'Novo Agendamento';
 
-    // Toggle campo de resolução se status for Concluído
     const checkResolutionDisplay = () => {
       if (dom.inputStatus.value === 'Concluído') {
         dom.fieldResolutionWrapper.classList.remove('hidden');
@@ -549,7 +527,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // 10. Modal de Detalhes
   async function openDetailsModal(id) {
     try {
       const app = await API.getAppointment(id);
@@ -674,7 +651,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `;
 
-      // Atualizar botões de ação rápida no rodapé
       if (app.status === 'Concluído') {
         dom.btnQuickStart.classList.add('hidden');
         dom.btnQuickComplete.classList.add('hidden');
@@ -698,7 +674,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     dom.modalDetails.classList.add('hidden');
   });
 
-  // Ações de Detalhes
   dom.btnEditFromDetails.addEventListener('click', async () => {
     dom.modalDetails.classList.add('hidden');
     const app = await API.getAppointment(state.viewingAppointmentId);
@@ -756,7 +731,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Funções Globais expostas no window para os botões de ação na tabela
   window.viewEvent = (id) => openDetailsModal(id);
   window.editEvent = async (id) => {
     const app = await API.getAppointment(id);
@@ -775,11 +749,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  // 11. Alternância de Abas (Calendário, Lista, Histórico)
   function switchTab(newTab) {
     state.currentTab = newTab;
 
-    // Reset styles de botões
     [dom.tabCalendarBtn, dom.tabListBtn, dom.tabHistoryBtn].forEach(btn => {
       btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm', 'font-bold');
       btn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white', 'font-semibold');
@@ -811,7 +783,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   dom.tabListBtn.addEventListener('click', () => switchTab('list'));
   dom.tabHistoryBtn.addEventListener('click', () => switchTab('history'));
 
-  // 12. Controles de Calendário
   dom.calPrevBtn.addEventListener('click', () => calendar.prev());
   dom.calNextBtn.addEventListener('click', () => calendar.next());
   dom.calTodayBtn.addEventListener('click', () => calendar.today());
@@ -832,7 +803,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCalendarTitle();
   });
 
-  // 13. Pesquisa e Filtros
   let searchTimeout = null;
   dom.searchInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
@@ -879,7 +849,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadAppointments();
   });
 
-  // Filtros do Histórico
   dom.historyFilterAction.addEventListener('change', loadHistory);
   let historySearchTimeout = null;
   dom.historySearchInput.addEventListener('input', () => {
@@ -887,10 +856,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     historySearchTimeout = setTimeout(loadHistory, 300);
   });
 
-  // 14. Botão Novo Agendamento
   dom.btnNewAppointment.addEventListener('click', () => openAppointmentModal());
 
-  // 15. Perfil e Troca de Senha
   dom.btnOpenProfile.addEventListener('click', () => {
     if (state.user) {
       dom.profileNameInput.value = state.user.name || '';
@@ -903,7 +870,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     dom.modalProfile.classList.add('hidden');
   });
 
-  // Salvar novo nome de exibição do usuário
   dom.formUpdateProfile.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = dom.profileNameInput.value.trim();
@@ -948,14 +914,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // 16. Logout
   dom.btnLogout.addEventListener('click', async () => {
     if (confirm('Deseja realmente sair do sistema?')) {
       await API.logout();
     }
   });
 
-  // 17. Inicialização
   await loadUser();
   await loadStats();
   await loadSystems();

@@ -34,7 +34,7 @@ def _b64_decode(data: str) -> bytes:
 
 
 def hash_password(password: str) -> str:
-    """Gera hash seguro de senha utilizando PBKDF2-HMAC-SHA256 com salt aleatório."""
+
     salt = secrets.token_hex(16)
     iterations = 100_000
     derived = hashlib.pbkdf2_hmac(
@@ -44,7 +44,7 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifica se a senha em texto puro corresponde ao hash gerado."""
+
     try:
         parts = hashed_password.split("$")
         if len(parts) != 3:
@@ -60,7 +60,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Cria um token JWT assinado digitalmente com HMAC-SHA256."""
+
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -85,7 +85,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
-    """Decodifica e valida assinatura e expiração do token JWT."""
+
     try:
         parts = token.split(".")
         if len(parts) != 3:
@@ -105,7 +105,6 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
         payload_bytes = _b64_decode(payload_b64)
         payload = json.loads(payload_bytes.decode("utf-8"))
 
-        # Validar expiração
         exp = payload.get("exp")
         if exp and datetime.now(timezone.utc).timestamp() > exp:
             return None
@@ -119,13 +118,13 @@ def get_token_from_request(
     request: Request,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(security_bearer),
 ) -> Optional[str]:
-    """Obtém o token a partir do header Authorization ou cookie."""
+
     if creds and creds.scheme.lower() == "bearer":
         return creds.credentials
     cookie_token = request.cookies.get("devagenda_token")
     if cookie_token:
         return cookie_token
-    # Checar header Authorization manual
+
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         return auth_header.split(" ")[1]
@@ -137,7 +136,7 @@ def get_current_user(
     creds: Optional[HTTPAuthorizationCredentials] = Depends(security_bearer),
     db: Session = Depends(get_db),
 ) -> User:
-    """Dependência para autenticar requisições e retornar o usuário ativo."""
+
     token = get_token_from_request(request, creds)
     if not token:
         raise HTTPException(

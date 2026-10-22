@@ -21,12 +21,12 @@ INITIAL_ADMIN_NAME = os.getenv("INITIAL_ADMIN_NAME", "Administrador")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Inicialização do banco de dados e dados padrão
+
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
-        # 1. Criação do usuário administrador inicial se a tabela estiver vazia
+
         admin_user = db.query(User).filter(User.username == INITIAL_ADMIN_USER).first()
         if not admin_user:
             admin_user = User(
@@ -44,7 +44,6 @@ async def lifespan(app: FastAPI):
                 f"[DevAgenda] Usuário inicial criado: '{INITIAL_ADMIN_USER}' com a senha padrão."
             )
 
-        # 2. Inserção de sistemas padrão se tabela estiver vazia
         if db.query(SystemClient).count() == 0:
             default_systems = [
                 SystemClient(
@@ -71,7 +70,6 @@ async def lifespan(app: FastAPI):
             db.add_all(default_systems)
             db.commit()
 
-        # 3. Inserção de compromissos de exemplo se a base estiver zerada
         if db.query(Appointment).count() == 0:
             today = date.today()
             sample_events = [
@@ -136,7 +134,6 @@ async def lifespan(app: FastAPI):
             db.add_all(sample_events)
             db.commit()
 
-            # Adicionar logs para os exemplos
             for event in sample_events:
                 db.add(
                     HistoryLog(
@@ -160,7 +157,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS para permitir conexões externas e testes locais
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -169,34 +165,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Incluir rotas de API
 app.include_router(auth_routes.router)
 app.include_router(appointment_routes.router)
 app.include_router(history_routes.router)
 app.include_router(stats_routes.router)
 
-
-# Healthcheck para monitoramento externo e Docker
 @app.get("/health")
 def healthcheck():
     return {"status": "ok", "app": "DevAgenda", "version": "1.0.0"}
 
-
-# Páginas Web Principais
 STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static"
 )
-
 
 @app.get("/")
 def serve_index():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
-
 @app.get("/login")
 def serve_login():
     return FileResponse(os.path.join(STATIC_DIR, "login.html"))
 
-
-# Montar arquivos estáticos (CSS, JS, assets)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

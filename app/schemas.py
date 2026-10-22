@@ -3,7 +3,6 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
-# --- Schemas de Usuário e Autenticação ---
 class UserLogin(BaseModel):
     username: str = Field(..., description="Nome de usuário")
     password: str = Field(..., description="Senha")
@@ -41,7 +40,6 @@ class TokenResponse(BaseModel):
     user: UserResponse
 
 
-# --- Schemas de Histórico ---
 class HistoryLogResponse(BaseModel):
     id: int
     appointment_id: Optional[int] = None
@@ -54,8 +52,6 @@ class HistoryLogResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
-# --- Schemas de Compromissos ---
 class AppointmentBase(BaseModel):
     title: str = Field(..., min_length=2, max_length=200)
     system_client: str = Field(default="Geral", max_length=100)
@@ -108,8 +104,6 @@ class AppointmentResponse(AppointmentBase):
     class Config:
         from_attributes = True
 
-
-# --- Schemas de Estatísticas / Dashboard ---
 class DashboardStats(BaseModel):
     total_appointments: int
     pending: int

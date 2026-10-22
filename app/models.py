@@ -33,18 +33,15 @@ class Appointment(Base):
     title = Column(String(200), nullable=False, index=True)
     system_client = Column(String(100), nullable=False, index=True, default="Geral")
     category = Column(String(50), nullable=False, default="Suporte")
-    # Categorias: Suporte, Bugfix, Desenvolvimento, Deploy, Manutenção, Reunião
 
     priority = Column(String(20), nullable=False, default="Normal")
-    # Prioridades: Baixa, Normal, Alta, Urgente
 
     status = Column(String(30), nullable=False, default="Pendente", index=True)
-    # Status: Pendente, Em Andamento, Aguardando, Concluído, Cancelado
 
-    start_date = Column(String(10), nullable=False, index=True)  # Formato YYYY-MM-DD
-    start_time = Column(String(5), nullable=True, default="09:00")  # Formato HH:MM
-    end_date = Column(String(10), nullable=False, index=True)  # Formato YYYY-MM-DD
-    end_time = Column(String(5), nullable=True, default="10:00")  # Formato HH:MM
+    start_date = Column(String(10), nullable=False, index=True)  
+    start_time = Column(String(5), nullable=True, default="09:00")
+    end_date = Column(String(10), nullable=False, index=True)
+    end_time = Column(String(5), nullable=True, default="10:00")
     is_all_day = Column(Boolean, default=False)
 
     description = Column(Text, nullable=True)
@@ -74,7 +71,7 @@ class HistoryLog(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     action = Column(
         String(50), nullable=False
-    )  # CRIACAO, EDICAO, STATUS, CONCLUSAO, EXCLUSAO
+    )
     description = Column(Text, nullable=False)
     timestamp = Column(DateTime, default=utc_now, index=True)
 

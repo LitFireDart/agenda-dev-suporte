@@ -1,6 +1,4 @@
-/**
- * Cliente de API do DevAgenda
- */
+
 const API = {
   getToken() {
     return localStorage.getItem('devagenda_token') || '';
@@ -58,7 +56,6 @@ const API = {
     }
   },
 
-  // Auth
   async login(username, password) {
     const data = await this.request('/api/auth/login', {
       method: 'POST',
@@ -96,7 +93,6 @@ const API = {
     });
   },
 
-  // Appointments
   async getAppointments(filters = {}) {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(filters)) {
@@ -143,7 +139,6 @@ const API = {
     return this.request('/api/appointments/meta/systems');
   },
 
-  // History & Audit
   async getHistory(filters = {}) {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(filters)) {
@@ -155,7 +150,6 @@ const API = {
     return this.request(`/api/history${query}`);
   },
 
-  // Stats
   async getStats() {
     return this.request('/api/stats');
   }

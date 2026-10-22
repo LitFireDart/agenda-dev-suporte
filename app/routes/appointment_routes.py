@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/appointments", tags=["Compromissos e Suporte"])
 
 
 def _format_appointment(app: Appointment) -> dict:
-    """Auxiliar para formatar resposta com nome do criador e histórico."""
+
     history_items = []
     for h in app.history:
         history_items.append(
@@ -74,10 +74,8 @@ def get_appointments(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Retorna lista de compromissos com suporte a filtros e busca avançada."""
     query = db.query(Appointment)
 
-    # Filtro de Mês específico (para renderização rápida de calendário)
     if month:
         query = query.filter(
             or_(
@@ -86,13 +84,11 @@ def get_appointments(
             )
         )
 
-    # Filtro de intervalo de datas
     if start_date:
         query = query.filter(Appointment.end_date >= start_date)
     if end_date:
         query = query.filter(Appointment.start_date <= end_date)
 
-    # Filtros exatos
     if status and status != "Todos":
         query = query.filter(Appointment.status == status)
     if category and category != "Todas":
@@ -102,7 +98,6 @@ def get_appointments(
     if system_client and system_client != "Todos":
         query = query.filter(Appointment.system_client == system_client)
 
-    # Busca textual (título, descrição, sistema_client, resolution_notes)
     if search and search.strip():
         term = f"%{search.strip()}%"
         query = query.filter(
@@ -114,7 +109,6 @@ def get_appointments(
             )
         )
 
-    # Ordenação por data de início e horário
     appointments = query.order_by(
         Appointment.start_date.asc(), Appointment.start_time.asc()
     ).all()
@@ -129,7 +123,7 @@ def create_appointment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Cria um novo compromisso/chamado e gera histórico automático."""
+
     end_date = payload.end_date if payload.end_date else payload.start_date
 
     app = Appointment(
@@ -153,7 +147,6 @@ def create_appointment(
     db.add(app)
     db.flush()
 
-    # Registrar sistema se ainda não constar
     if app.system_client:
         existing_sys = (
             db.query(SystemClient)
@@ -164,7 +157,6 @@ def create_appointment(
             new_sys = SystemClient(name=app.system_client)
             db.add(new_sys)
 
-    # Histórico de criação
     desc = f"Atividade '{app.title}' agendada para {app.start_date} às {app.start_time or 'Dia todo'} (Sistema: {app.system_client}, Prioridade: {app.priority})."
     log = HistoryLog(
         appointment_id=app.id,
@@ -185,7 +177,7 @@ def get_appointment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Busca detalhes de um compromisso por ID com histórico."""
+
     app = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Compromisso não encontrado.")
@@ -199,7 +191,7 @@ def update_appointment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Atualiza dados do compromisso e audita as alterações no histórico."""
+
     app = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Compromisso não encontrado.")
@@ -247,7 +239,7 @@ def update_appointment_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Atualização rápida de status (Pendente, Em Andamento, Concluído, etc.) com notas."""
+
     app = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Compromisso não encontrado.")
@@ -281,7 +273,7 @@ def delete_appointment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Exclui um compromisso e registra a exclusão no histórico geral."""
+
     app = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Compromisso não encontrado.")
@@ -289,7 +281,6 @@ def delete_appointment(
     title = app.title
     sys = app.system_client
 
-    # Registra no histórico geral (sem vínculo com o appointment_id que será excluído)
     log = HistoryLog(
         appointment_id=None,
         user_id=current_user.id,
@@ -307,11 +298,10 @@ def delete_appointment(
 def get_systems(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    """Retorna lista distinta de sistemas/clientes cadastrados para filtros e autocompletar."""
+
     systems = db.query(SystemClient.name).order_by(SystemClient.name.asc()).all()
     names = [s[0] for s in systems]
 
-    # Também pegar dos appointments existentes
     app_systems = db.query(Appointment.system_client).distinct().all()
     for s in app_systems:
         if s[0] and s[0] not in names:

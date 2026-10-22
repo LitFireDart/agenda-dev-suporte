@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/auth", tags=["Autenticação"])
 
 @router.post("/login", response_model=TokenResponse)
 def login(login_data: UserLogin, response: Response, db: Session = Depends(get_db)):
-    """Autentica o usuário e retorna o token de acesso + cookie."""
+
     user = db.query(User).filter(User.username == login_data.username.strip()).first()
     if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
@@ -37,22 +37,19 @@ def login(login_data: UserLogin, response: Response, db: Session = Depends(get_d
             detail="Esta conta de usuário está desativada.",
         )
 
-    # Gerar token
     access_token = create_access_token(
         data={"sub": user.username, "user_id": user.id, "role": user.role}
     )
 
-    # Definir cookie de autenticação para requisições do navegador
     response.set_cookie(
         key="devagenda_token",
         value=access_token,
         httponly=True,
         samesite="lax",
         max_age=72 * 3600,
-        secure=False,  # Pode ser True em HTTPS
+        secure=False,
     )
 
-    # Registrar log de login
     log = HistoryLog(
         user_id=user.id,
         action="LOGIN",
@@ -70,7 +67,7 @@ def logout(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Desconecta o usuário removendo o cookie da sessão."""
+
     response.delete_cookie(key="devagenda_token")
     log = HistoryLog(
         user_id=current_user.id,
@@ -84,7 +81,7 @@ def logout(
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
-    """Retorna dados do usuário atualmente logado."""
+
     return current_user
 
 
@@ -94,7 +91,7 @@ def change_password(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Altera a senha do usuário atual."""
+
     if not verify_password(pwd_data.current_password, current_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -119,7 +116,7 @@ def update_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Atualiza o nome de exibição e e-mail do usuário autenticado."""
+
     old_name = current_user.name
     new_name = profile_data.name.strip()
 

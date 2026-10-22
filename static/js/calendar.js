@@ -1,11 +1,9 @@
-/**
- * Motor de Calendário Interativo para DevAgenda (Mês e Semana) - Tema Cinza Claro Tradicional
- */
+
 class DevCalendar {
   constructor(options = {}) {
     this.container = options.container;
     this.currentDate = new Date();
-    this.viewMode = options.viewMode || 'month'; // 'month' | 'week'
+    this.viewMode = options.viewMode || 'month';
     this.events = [];
     this.onDayClick = options.onDayClick || (() => {});
     this.onEventClick = options.onEventClick || (() => {});
@@ -64,7 +62,7 @@ class DevCalendar {
     if (this.viewMode === 'month') {
       return `${months[this.currentDate.getMonth()]} de ${year}`;
     } else {
-      // Semana
+
       const weekStart = this.getStartOfWeek(this.currentDate);
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
@@ -80,7 +78,7 @@ class DevCalendar {
 
   getStartOfWeek(date) {
     const d = new Date(date);
-    const day = d.getDay(); // 0 is Sunday
+    const day = d.getDay();
     const diff = d.getDate() - day;
     return new Date(d.setDate(diff));
   }
@@ -166,7 +164,6 @@ class DevCalendar {
         <div class="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-200 bg-slate-100">
     `;
 
-    // Dias do mês anterior (padding)
     for (let i = firstDayIndex - 1; i >= 0; i--) {
       const dayNum = lastDayPrevMonth - i;
       const prevDate = new Date(year, month - 1, dayNum);
@@ -174,14 +171,12 @@ class DevCalendar {
       html += this.renderDayCell(dateStr, dayNum, false, todayStr);
     }
 
-    // Dias do mês atual
     for (let dayNum = 1; dayNum <= lastDayCurrentMonth; dayNum++) {
       const currDate = new Date(year, month, dayNum);
       const dateStr = this.formatDateYMD(currDate);
       html += this.renderDayCell(dateStr, dayNum, true, todayStr);
     }
 
-    // Dias do próximo mês (padding para fechar a grade de 35 ou 42 células)
     const totalRendered = firstDayIndex + lastDayCurrentMonth;
     const remaining = (totalRendered % 7 === 0) ? 0 : 7 - (totalRendered % 7);
     for (let dayNum = 1; dayNum <= remaining; dayNum++) {
@@ -402,7 +397,7 @@ class DevCalendar {
   }
 
   attachCellEvents() {
-    // Clique no dia ou no botão "+" de adicionar
+
     const addButtons = this.container.querySelectorAll('[data-date-add]');
     addButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -412,12 +407,11 @@ class DevCalendar {
       });
     });
 
-    // Clique na célula do dia para adicionar rapidamente
     const cells = this.container.querySelectorAll('.calendar-day-cell');
     cells.forEach(cell => {
       cell.addEventListener('click', (e) => {
         if (e.target.closest('.appointment-badge') || e.target.closest('.btn-more-events')) {
-          return; // Evento do compromisso
+          return;
         }
         const dateStr = cell.getAttribute('data-date');
         if (dateStr) {
@@ -426,7 +420,6 @@ class DevCalendar {
       });
     });
 
-    // Clique no badge do compromisso
     const badges = this.container.querySelectorAll('.appointment-badge');
     badges.forEach(badge => {
       badge.addEventListener('click', (e) => {
@@ -438,7 +431,6 @@ class DevCalendar {
       });
     });
 
-    // Botão de ver mais eventos em um dia
     const moreBtns = this.container.querySelectorAll('.btn-more-events');
     moreBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {

@@ -18,7 +18,7 @@ def get_history(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Retorna o histórico geral de auditoria e linha do tempo de atividades."""
+
     query = db.query(HistoryLog).order_by(HistoryLog.timestamp.desc())
 
     if action and action != "TODOS":

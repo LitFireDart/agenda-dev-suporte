@@ -26,13 +26,11 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white">
-  
-  <!-- Fundo com gradiente sutil cinza claro -->
+
   <div class="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100/50 via-slate-100 to-slate-200 -z-10"></div>
 
   <div class="w-full max-w-md">
-    
-    <!-- Logo e Cabeçalho -->
+
     <div class="text-center mb-8">
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 text-blue-600 mb-4 shadow-md">
         <i data-lucide="terminal" class="w-8 h-8"></i>
@@ -45,7 +43,6 @@
       </p>
     </div>
 
-    <!-- Card de Login -->
     <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-xl relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400"></div>
 
@@ -111,7 +108,6 @@
         </button>
       </form>
 
-      <!-- Dica de Acesso Padrão -->
       <div class="mt-6 pt-6 border-t border-slate-200">
         <div class="flex items-center justify-between text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200">
           <div>
@@ -129,7 +125,6 @@
       </div>
     </div>
 
-    <!-- Rodapé -->
     <div class="text-center mt-6 text-xs text-slate-500 font-medium">
       <p>DevAgenda &bull; Desenvolvido para Programadores e Suporte a Sistemas</p>
     </div>
@@ -139,7 +134,6 @@
   <script>
     lucide.createIcons();
 
-    // Toggle senha
     const togglePwd = document.getElementById('toggle-pwd');
     const pwdInput = document.getElementById('password');
     const pwdIcon = document.getElementById('pwd-icon');
@@ -151,13 +145,11 @@
       lucide.createIcons();
     });
 
-    // Preencher credenciais padrão
     document.getElementById('btn-fill-demo').addEventListener('click', () => {
       document.getElementById('username').value = 'admin';
       document.getElementById('password').value = 'admin123';
     });
 
-    // Submissão do login
     const form = document.getElementById('login-form');
     const alertBox = document.getElementById('alert-box');
     const btnSubmit = document.getElementById('btn-submit');
@@ -184,7 +176,6 @@
           throw new Error(data.detail || 'Falha ao autenticar.');
         }
 
-        // Salvar token e dados do usuário
         localStorage.setItem('devagenda_token', data.access_token);
         localStorage.setItem('devagenda_user', JSON.stringify(data.user));
 
@@ -204,7 +195,6 @@
       }
     });
 
-    // Se já estiver logado, redireciona para a home
     if (localStorage.getItem('devagenda_token')) {
       fetch('/api/auth/me', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('devagenda_token')}` }
