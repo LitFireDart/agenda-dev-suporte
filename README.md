@@ -42,7 +42,7 @@ Caso tenha dado algum erro na hora da inicialização, confira antes se o Uvicor
 
 ## Instalando o Uvicorn
 
-Em caso do Uvicorn não ter sido instalado, execute:
+Em caso do Uvicorn não ter sido instalado, execute no terminal do vscode ou no powershell:
 
 ```powershell
 py -m uvicorn --version
