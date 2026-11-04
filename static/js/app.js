@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     userRole: document.getElementById('user-role'),
     userAvatar: document.getElementById('user-avatar'),
     btnLogout: document.getElementById('btn-logout'),
+    btnThemeToggle: document.getElementById('btn-theme-toggle'),
     
     statTotal: document.getElementById('stat-total'),
     statPending: document.getElementById('stat-pending'),
@@ -119,6 +120,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Toast Container
     toastContainer: document.getElementById('toast-container')
   };
+
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    try { localStorage.setItem('devagenda_theme', isDark ? 'dark' : 'light'); } catch (_) {}
+    dom.btnThemeToggle.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-4 h-4"></i>`;
+    dom.btnThemeToggle.setAttribute('aria-label', isDark ? 'Ativar tema claro' : 'Ativar tema escuro');
+    dom.btnThemeToggle.title = isDark ? 'Ativar tema claro' : 'Ativar tema escuro';
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  applyTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  dom.btnThemeToggle.addEventListener('click', () => {
+    applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+  });
 
   const calendar = new DevCalendar({
     container: dom.calendarContainer,

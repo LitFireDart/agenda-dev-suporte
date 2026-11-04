@@ -155,3 +155,19 @@ body {
     opacity: 1;
   }
 }
+
+/* Tema escuro: ajusta os utilitários Tailwind usados pelas telas e pelos modais. */
+.dark body { background-color: #0f172a; color: #e2e8f0; color-scheme: dark; }
+.dark [class~="bg-white"], .dark [class*="bg-white/"] { background-color: #1e293b !important; }
+.dark [class~="bg-slate-50"], .dark [class~="bg-slate-100"], .dark [class*="bg-slate-50/"], .dark [class*="bg-slate-100/"] { background-color: #0f172a !important; }
+.dark [class~="bg-slate-200"] { background-color: #334155 !important; }
+.dark [class~="text-slate-900"], .dark [class~="text-slate-800"] { color: #f1f5f9 !important; }
+.dark [class~="text-slate-700"], .dark [class~="text-slate-600"] { color: #cbd5e1 !important; }
+.dark [class~="text-slate-500"], .dark [class~="text-slate-400"] { color: #94a3b8 !important; }
+.dark [class*="border-slate-200"], .dark [class*="border-slate-300"] { border-color: #334155 !important; }
+.dark [class*="hover:bg-slate-100"]:hover, .dark [class*="hover:bg-slate-200"]:hover { background-color: #334155 !important; }
+.dark input, .dark select, .dark textarea { color-scheme: dark; }
+.dark input::placeholder, .dark textarea::placeholder { color: #94a3b8; }
+.dark .timeline-item::before { border-color: #1e293b; }
+.dark .fc, .dark .fc-theme-standard td, .dark .fc-theme-standard th, .dark .fc-theme-standard .fc-scrollgrid { border-color: #334155; }
+.dark .fc .fc-daygrid-day-number, .dark .fc .fc-col-header-cell-cushion { color: #cbd5e1; }
