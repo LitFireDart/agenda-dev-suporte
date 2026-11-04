@@ -56,4 +56,4 @@ py -m uvicorn --version
 
 Procure na web a página oficial de download do Python e siga as instruções para download conforme o registro oficial e confira se ele foi configurado corretamente, se sim, o sistema irá rodar sem problemas tanto no vscode quanto no powershell
 
-##Créditos devidos ao Codex pela estrutura em CSS e frontend
+## Créditos devidos ao Codex pela estrutura em CSS e frontend
