@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, RedirectResponse
@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from .database import engine, Base, SessionLocal
+from .migrations import run_migrations
 from .models import User, Appointment, HistoryLog, SystemClient
 from .security import hash_password, decode_access_token
 from .routes import auth_routes, appointment_routes, history_routes, stats_routes
@@ -23,6 +24,7 @@ INITIAL_ADMIN_NAME = os.getenv("INITIAL_ADMIN_NAME", "Administrador")
 async def lifespan(app: FastAPI):
 
     Base.metadata.create_all(bind=engine)
+    run_migrations(engine)
 
     db = SessionLocal()
     try:
@@ -128,6 +130,7 @@ async def lifespan(app: FastAPI):
                     is_all_day=False,
                     description="Revisão de prioridades dos chamados de suporte e metas da sprint.",
                     resolution_notes="Alinhadas as prioridades para a semana. Foco no suporte do ERP.",
+                    completed_at=datetime.now(timezone.utc) - timedelta(days=1),
                     user_id=admin_user.id,
                 ),
             ]

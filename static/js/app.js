@@ -9,11 +9,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const state = {
     user: null,
-    currentTab: 'calendar', // 'calendar' | 'list' | 'history'
-    viewMode: 'month',      // 'month' | 'week'
+    currentTab: 'calendar',
+    viewMode: 'month',      
     appointments: [],
     historyLogs: [],
     stats: {},
+    progressYear: null,
     systems: [],
     filters: {
       search: '',
@@ -44,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     tabCalendarBtn: document.getElementById('tab-calendar-btn'),
     tabListBtn: document.getElementById('tab-list-btn'),
     tabHistoryBtn: document.getElementById('tab-history-btn'),
+    tabProgressBtn: document.getElementById('tab-progress-btn'),
+    filtersSection: document.getElementById('filters-section'),
+    viewProgressSection: document.getElementById('view-progress-section'),
     viewCalendarSection: document.getElementById('view-calendar-section'),
     viewListSection: document.getElementById('view-list-section'),
     viewHistorySection: document.getElementById('view-history-section'),
@@ -117,7 +121,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     profileUserName: document.getElementById('profile-user-name'),
     profileUserRole: document.getElementById('profile-user-role'),
 
-    // Toast Container
     toastContainer: document.getElementById('toast-container')
   };
 
@@ -152,7 +155,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // 5. Funções de Toast / Alerta
+  const progress = new DevProgress({
+    heatmap: document.getElementById('progress-heatmap'),
+    summary: document.getElementById('progress-summary'),
+    heading: document.getElementById('progress-heading'),
+    years: document.getElementById('progress-years'),
+    detail: document.getElementById('progress-day-detail'),
+    onYearChange: (year) => {
+      state.progressYear = year;
+      loadProgress();
+    },
+    onItemClick: (id) => openDetailsModal(id)
+  });
+
   function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     const colors = {
@@ -182,7 +197,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 4000);
   }
 
-  // 6. Atualização de Dados da API
   async function loadUser() {
     try {
       const user = await API.getMe();
@@ -207,6 +221,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       dom.statCompleted.textContent = stats.completed;
       dom.statUrgent.textContent = stats.urgent;
       dom.statToday.textContent = stats.today_count;
+      // loadStats roda depois de toda alteração; mantém o gráfico em dia.
+      if (state.currentTab === 'progress') loadProgress();
     } catch (err) {
       console.error('Erro ao carregar estatísticas:', err);
     }
@@ -276,6 +292,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderHistoryView(logs);
     } catch (err) {
       showToast('Erro ao carregar histórico: ' + err.message, 'error');
+    }
+  }
+
+  async function loadProgress() {
+    try {
+      const data = await API.getContributions(state.progressYear);
+      progress.render(data);
+    } catch (err) {
+      showToast('Erro ao carregar progresso: ' + err.message, 'error');
     }
   }
 
@@ -768,7 +793,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function switchTab(newTab) {
     state.currentTab = newTab;
 
-    [dom.tabCalendarBtn, dom.tabListBtn, dom.tabHistoryBtn].forEach(btn => {
+    [dom.tabCalendarBtn, dom.tabListBtn, dom.tabHistoryBtn, dom.tabProgressBtn].forEach(btn => {
       btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm', 'font-bold');
       btn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white', 'font-semibold');
     });
@@ -776,6 +801,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     dom.viewCalendarSection.classList.add('hidden');
     dom.viewListSection.classList.add('hidden');
     dom.viewHistorySection.classList.add('hidden');
+    dom.viewProgressSection.classList.add('hidden');
+    // A barra de busca/filtros não se aplica ao gráfico de progresso.
+    dom.filtersSection.classList.toggle('hidden', newTab === 'progress');
 
     if (newTab === 'calendar') {
       dom.tabCalendarBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm', 'font-bold');
@@ -792,12 +820,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       dom.tabHistoryBtn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white', 'font-semibold');
       dom.viewHistorySection.classList.remove('hidden');
       loadHistory();
+    } else if (newTab === 'progress') {
+      dom.tabProgressBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm', 'font-bold');
+      dom.tabProgressBtn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white', 'font-semibold');
+      dom.viewProgressSection.classList.remove('hidden');
+      loadProgress();
     }
   }
 
   dom.tabCalendarBtn.addEventListener('click', () => switchTab('calendar'));
   dom.tabListBtn.addEventListener('click', () => switchTab('list'));
   dom.tabHistoryBtn.addEventListener('click', () => switchTab('history'));
+  dom.tabProgressBtn.addEventListener('click', () => switchTab('progress'));
 
   dom.calPrevBtn.addEventListener('click', () => calendar.prev());
   dom.calNextBtn.addEventListener('click', () => calendar.next());

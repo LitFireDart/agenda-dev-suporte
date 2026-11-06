@@ -8,6 +8,7 @@
 - Categorias, prioridades, status, pesquisa e filtros.
 - Visualização em lista/tabela e ações rápidas.
 - Histórico de auditoria e notas de resolução técnica.
+- Aba **Progresso**: mapa de calor estilo GitHub com as tarefas concluídas por dia, sequências (streaks), seleção de ano e lista do que foi concluído em cada dia.
 - Login com usuário e senha, além de opção para alterar a senha no perfil.
 - Banco de dados local SQLite (`agenda.db`).
 
@@ -55,5 +56,3 @@ py -m uvicorn --version
 ## Instalando o Python
 
 Procure na web a página oficial de download do Python e siga as instruções para download conforme o registro oficial e confira se ele foi configurado corretamente, se sim, o sistema irá rodar sem problemas tanto no vscode quanto no powershell
-
-## Créditos devidos ao Codex pela estrutura em CSS e frontend

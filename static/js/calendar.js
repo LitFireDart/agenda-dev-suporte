@@ -204,7 +204,7 @@ class DevCalendar {
 
     let cellBg = isCurrentMonth ? (isWeekend ? 'bg-slate-50/70' : 'bg-white') : 'bg-slate-100/60 opacity-60';
     if (isToday) {
-      cellBg = 'bg-blue-50/70 ring-2 ring-inset ring-blue-500/80';
+      cellBg = 'is-today bg-blue-50/70 ring-2 ring-inset ring-blue-500/80';
     }
 
     let eventsHtml = '';
@@ -310,9 +310,9 @@ class DevCalendar {
       }).sort((a, b) => (a.start_time || '00:00').localeCompare(b.start_time || '00:00'));
 
       html += `
-        <div class="flex flex-col min-h-[450px] ${isToday ? 'bg-blue-50/20' : 'bg-white'}">
+        <div class="flex flex-col min-h-[450px] ${isToday ? 'is-today-soft bg-blue-50/20' : 'bg-white'}">
           <!-- Cabeçalho do Dia na Semana -->
-          <div class="p-3 border-b border-slate-200 flex items-center justify-between ${isToday ? 'bg-blue-50' : 'bg-slate-50'}">
+          <div class="p-3 border-b border-slate-200 flex items-center justify-between ${isToday ? 'is-today bg-blue-50' : 'bg-slate-50'}">
             <div>
               <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">
                 ${weekDaysNames[i]}
