@@ -181,12 +181,29 @@ STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static"
 )
 
+# Páginas e arquivos estáticos sempre são revalidados pelo navegador, para que uma
+# atualização nunca fique escondida atrás de CSS/JS antigo em cache.
+NO_CACHE = {"Cache-Control": "no-cache"}
+
+
+class NoCacheStaticFiles(StaticFiles):
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 @app.get("/")
 def serve_index():
-    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"), headers=NO_CACHE)
 
 @app.get("/login")
 def serve_login():
-    return FileResponse(os.path.join(STATIC_DIR, "login.html"))
+    return FileResponse(os.path.join(STATIC_DIR, "login.html"), headers=NO_CACHE)
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+@app.get("/intro")
+def serve_intro():
+    return FileResponse(os.path.join(STATIC_DIR, "intro.html"), headers=NO_CACHE)
+
+app.mount("/static", NoCacheStaticFiles(directory=STATIC_DIR), name="static")

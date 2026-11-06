@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevAgenda</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <noscript><meta http-equiv="refresh" content="1;url=/"></noscript>
+  <script>
+    // Sem login não há intro: volta para a tela de entrada.
+    try {
+      if (!localStorage.getItem('devagenda_token')) { location.replace('/login'); }
+      if (localStorage.getItem('devagenda_theme') === 'dark') document.documentElement.classList.add('dark');
+    } catch (_) {}
+  </script>
+  <style>
+    /* CSS próprio da intro: não depende do style.css (nem do cache dele). */
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    body {
+      display: flex; align-items: center; justify-content: center;
+      background: #f1f5f9; cursor: pointer;
+      transition: opacity 0.4s ease;
+    }
+    html.dark body { background: #0f172a; }
+    body.is-leaving { opacity: 0; }
+
+    svg { width: 260px; max-width: 56vw; height: auto; overflow: visible;
+          filter: drop-shadow(0 8px 16px rgba(30, 58, 138, 0.18)); }
+    html.dark svg { filter: none; }
+
+    /* 1) a agenda aparece */
+    .intro-agenda {
+      opacity: 0; transform-box: fill-box; transform-origin: center;
+      animation: intro-agenda 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s forwards;
+    }
+    @keyframes intro-agenda {
+      from { opacity: 0; transform: translateY(10px) scale(0.96); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* 2) o marcador azul sai de trás; 3) depois o amarelo */
+    .intro-marker {
+      opacity: 0; transform: translateX(-90px);
+      animation: intro-marker 0.6s cubic-bezier(0.3, 0.7, 0.4, 1) forwards;
+    }
+    .intro-marker--blue   { animation-delay: 0.7s; }
+    .intro-marker--yellow { animation-delay: 1.05s; }
+    @keyframes intro-marker {
+      0%   { opacity: 1; transform: translateX(-90px); }
+      70%  { opacity: 1; transform: translateX(14px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    /* 4) o cursor do terminal pisca uma vez */
+    .intro-cursor { animation: intro-blink 0.5s ease-in-out 1.7s 1; }
+    @keyframes intro-blink { 0%, 100% { opacity: 1; } 45%, 55% { opacity: 0; } }
+
+    /* Sem regra de "reduzir movimento" de propósito: é uma intro curta e a animação é o ponto dela.
+       Para quem não quer ver, clique ou tecla pula. */
+  </style>
+</head>
+<body>
+  <svg width="260" height="201" viewBox="15 55 485 375" fill="none" aria-hidden="true" focusable="false">
+      <defs><path id="ia-body" d="M383.199 69H101.801C83.6855 69 69 81.9464 69 97.9167V387.083C69 403.054 83.6855 416 101.801 416H383.199C401.315 416 416 403.054 416 387.083V97.9167C416 81.9464 401.315 69 383.199 69Z"/></defs>
+      <g class="intro-marker intro-marker--yellow">
+        <path d="M456.219 269.311C459.874 269.311 463.379 270.762 465.964 273.347C468.548 275.931 470 279.437 470 283.092V372.67C470 376.325 468.548 379.831 465.964 382.415C463.379 385 459.874 386.451 456.219 386.451H399.371V269.311H456.219ZM451.5 359C445.701 359 441 363.701 441 369.5C441 375.299 445.701 380 451.5 380C457.299 380 462 375.299 462 369.5C462 363.701 457.299 359 451.5 359Z" fill="#FFCA43"/>
+        <path d="M262 269H435V386H262V269Z" fill="#D5A62E"/>
+      </g>
+      <g class="intro-marker intro-marker--blue">
+        <path d="M456.219 103.074C459.874 103.074 463.379 104.526 465.964 107.11C468.548 109.695 470 113.2 470 116.855V205.572C470 209.227 468.548 212.733 465.964 215.317C463.379 217.902 459.874 219.354 456.219 219.354H399.371V103.074H456.219ZM451.5 119C445.701 119 441 123.701 441 129.5C441 135.299 445.701 140 451.5 140C457.299 140 462 135.299 462 129.5C462 123.701 457.299 119 451.5 119Z" fill="#2563EB"/>
+        <path d="M262 103H435V219H262V103Z" fill="#194AB4"/>
+      </g>
+      <g class="intro-agenda">
+        <use href="#ia-body" fill="#EFF6FF"/>
+        <mask id="ia-clip" fill="white"><use href="#ia-body"/></mask>
+        <path d="M101.801 69H383.199C401.315 69 416 81.9464 416 97.9167V387.083C416 403.054 401.315 416 383.199 416H101.801C83.6855 416 69 403.054 69 387.083V97.9167C69 81.9464 83.6855 69 101.801 69Z" stroke-width="20" stroke="#D2DEED" mask="url(#ia-clip)"/>
+        <path d="M87.5703 125.264C100.414 125.264 110.826 135.676 110.826 148.52C110.826 148.68 110.824 148.84 110.82 149H29.0059C29.0026 148.84 29 148.68 29 148.52C29 135.676 39.412 125.264 52.2559 125.264H87.5703Z" fill="#BCCEF6"/>
+        <path d="M110.82 149C110.564 161.622 100.254 171.775 87.5703 171.775H52.2559C39.5726 171.775 29.2617 161.622 29.0059 149H110.82Z" fill="#618AE1"/>
+        <path d="M87.5703 220.264C100.414 220.264 110.826 230.676 110.826 243.52C110.826 243.68 110.824 243.84 110.82 244H29.0059C29.0026 243.84 29 243.68 29 243.52C29 230.676 39.412 220.264 52.2559 220.264H87.5703Z" fill="#BCCEF6"/>
+        <path d="M110.82 244C110.564 256.622 100.254 266.775 87.5703 266.775H52.2559C39.5726 266.775 29.2617 256.622 29.0059 244H110.82Z" fill="#618AE1"/>
+        <path d="M87.5703 315.264C100.414 315.264 110.826 325.676 110.826 338.52C110.826 338.68 110.824 338.84 110.82 339H29.0059C29.0026 338.84 29 338.68 29 338.52C29 325.676 39.412 315.264 52.2559 315.264H87.5703Z" fill="#BCCEF6"/>
+        <path d="M110.82 339C110.564 351.622 100.254 361.775 87.5703 361.775H52.2559C39.5726 361.775 29.2617 351.622 29.0059 339H110.82Z" fill="#618AE1"/>
+        <path d="M175.539 284.558L167.23 277.358C172.031 264.926 182.124 249.755 197.51 231.846C182.124 214.183 172.031 198.92 167.23 186.057L175.539 179.041C179.17 180.641 183.447 183.349 188.371 187.165C193.356 190.981 198.464 195.442 203.695 200.551C208.927 205.597 213.789 210.859 218.281 216.337C222.836 221.814 226.497 226.984 229.267 231.846C226.497 236.646 222.836 241.785 218.281 247.263C213.789 252.74 208.927 258.033 203.695 263.141C198.464 268.188 193.356 272.619 188.371 276.434C183.447 280.25 179.17 282.958 175.539 284.558Z" fill="#1A5CEB"/>
+        <path class="intro-cursor" d="M318.813 319.546H252.992L251.146 308.191C255.023 303.76 260.685 301.544 268.132 301.544H333.953L335.892 312.899C332.138 317.331 326.445 319.546 318.813 319.546Z" fill="#1A5CEB"/>
+      </g>
+    </svg>
+  <script>
+    // Duração: ~2,5 s de animação e depois some. Clique ou tecla pula.
+    (function () {
+      var done = false;
+      function go() {
+        if (done) return; done = true;
+        document.body.classList.add('is-leaving');
+        setTimeout(function () { location.replace('/'); }, 400);
+      }
+      document.body.addEventListener('click', go);
+      window.addEventListener('keydown', go);
+      setTimeout(go, 2800);
+    })();
+  </script>
+</body>
+</html>
