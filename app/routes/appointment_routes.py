@@ -18,6 +18,19 @@ from ..security import get_current_user
 router = APIRouter(prefix="/api/appointments", tags=["Compromissos e Suporte"])
 
 
+def _sync_completed_at(app: Appointment, old_status: Optional[str]) -> None:
+    """Mantém `completed_at` coerente com o status.
+
+    Marca o momento ao entrar em "Concluído" e limpa ao sair (reabertura ou
+    cancelamento), para o gráfico de progresso só contar o que está concluído.
+    """
+    if app.status == "Concluído":
+        if old_status != "Concluído" or app.completed_at is None:
+            app.completed_at = datetime.now(timezone.utc)
+    else:
+        app.completed_at = None
+
+
 def _format_appointment(app: Appointment) -> dict:
 
     history_items = []
@@ -49,6 +62,7 @@ def _format_appointment(app: Appointment) -> dict:
         "description": app.description,
         "resolution_notes": app.resolution_notes,
         "external_link": app.external_link,
+        "completed_at": app.completed_at,
         "user_id": app.user_id,
         "creator_name": app.creator.name if app.creator else "Desconhecido",
         "created_at": app.created_at,
@@ -144,6 +158,7 @@ def create_appointment(
         external_link=payload.external_link,
         user_id=current_user.id,
     )
+    _sync_completed_at(app, None)
     db.add(app)
     db.flush()
 
@@ -197,6 +212,7 @@ def update_appointment(
         raise HTTPException(status_code=404, detail="Compromisso não encontrado.")
 
     changes = []
+    old_status = app.status
     data = payload.model_dump(exclude_unset=True)
 
     for field, new_val in data.items():
@@ -214,6 +230,7 @@ def update_appointment(
                 changes.append(f"Campo '{field}' modificado")
             setattr(app, field, new_val)
 
+    _sync_completed_at(app, old_status)
     app.updated_at = datetime.now(timezone.utc)
 
     if changes:
@@ -248,6 +265,7 @@ def update_appointment_status(
     app.status = payload.status
     if payload.resolution_notes:
         app.resolution_notes = payload.resolution_notes
+    _sync_completed_at(app, old_status)
     app.updated_at = datetime.now(timezone.utc)
 
     log_action = "CONCLUSAO" if payload.status == "Concluído" else "STATUS"

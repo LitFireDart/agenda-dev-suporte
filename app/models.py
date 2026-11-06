@@ -51,6 +51,8 @@ class Appointment(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=utc_now)
     updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
+    # Momento (UTC) em que o status virou "Concluído". Alimenta o gráfico de progresso.
+    completed_at = Column(DateTime, nullable=True)
 
     creator = relationship("User", back_populates="appointments")
     history = relationship(

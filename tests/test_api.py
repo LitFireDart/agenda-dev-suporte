@@ -214,6 +214,65 @@ class TestDevAgendaAPI(unittest.TestCase):
         self.assertIn("completed", stats)
         self.assertGreaterEqual(stats["completed"], 1)
 
+    def test_10b_contributions_counts_completed_tasks(self):
+
+        headers = {"Authorization": f"Bearer {TestDevAgendaAPI.token}"}
+        res = requests.get(
+            f"{self.base_url}/api/stats/contributions?tz_offset=180",
+            headers=headers,
+            timeout=3,
+        )
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+
+        # A tarefa concluída no test_08 precisa aparecer hoje (fuso UTC-3).
+        titles = [i["title"] for i in data["items"]]
+        self.assertIn("Correção de Bug Crítico no Checkout", titles)
+        self.assertEqual(data["total"], len(data["items"]))
+        self.assertEqual(data["total"], sum(d["count"] for d in data["days"]))
+        self.assertEqual(data["active_days"], len(data["days"]))
+        self.assertGreaterEqual(data["current_streak"], 1)
+        self.assertGreaterEqual(data["longest_streak"], data["current_streak"])
+        self.assertIn(int(data["today"][:4]), data["years"])
+
+        year_res = requests.get(
+            f"{self.base_url}/api/stats/contributions?year={data['today'][:4]}",
+            headers=headers,
+            timeout=3,
+        )
+        self.assertEqual(year_res.status_code, 200)
+        self.assertEqual(year_res.json()["start"], f"{data['today'][:4]}-01-01")
+
+    def test_10c_reopening_removes_from_contributions(self):
+
+        headers = {"Authorization": f"Bearer {TestDevAgendaAPI.token}"}
+        url = f"{self.base_url}/api/appointments/{TestDevAgendaAPI.created_id}"
+
+        reopened = requests.put(
+            url, json={"status": "Em Andamento"}, headers=headers, timeout=3
+        )
+        self.assertEqual(reopened.status_code, 200)
+        self.assertIsNone(reopened.json()["completed_at"])
+
+        data = requests.get(
+            f"{self.base_url}/api/stats/contributions", headers=headers, timeout=3
+        ).json()
+        self.assertNotIn(
+            "Correção de Bug Crítico no Checkout", [i["title"] for i in data["items"]]
+        )
+
+        # Conclui de novo para os próximos testes continuarem válidos.
+        done = requests.patch(
+            f"{url}/status", json={"status": "Concluído"}, headers=headers, timeout=3
+        )
+        self.assertEqual(done.status_code, 200)
+        self.assertIsNotNone(done.json()["completed_at"])
+
+    def test_10d_contributions_requires_login(self):
+
+        res = requests.get(f"{self.base_url}/api/stats/contributions", timeout=3)
+        self.assertEqual(res.status_code, 401)
+
     def test_11_static_pages_served(self):
 
         res_home = requests.get(f"{self.base_url}/", timeout=3)

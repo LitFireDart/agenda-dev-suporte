@@ -99,10 +99,41 @@ class AppointmentResponse(AppointmentBase):
     creator_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    completed_at: Optional[datetime] = None
     history: List[HistoryLogResponse] = []
 
     class Config:
         from_attributes = True
+
+class ContributionDay(BaseModel):
+    date: str
+    count: int
+
+
+class ContributionItem(BaseModel):
+    date: str
+    id: int
+    title: str
+    category: str
+    system_client: str
+    priority: str
+    resolution_notes: Optional[str] = None
+
+
+class ContributionsResponse(BaseModel):
+    start: str
+    end: str
+    today: str
+    year: Optional[int] = None
+    years: List[int]
+    total: int
+    active_days: int
+    longest_streak: int
+    current_streak: int
+    busiest_day: Optional[ContributionDay] = None
+    days: List[ContributionDay]
+    items: List[ContributionItem]
+
 
 class DashboardStats(BaseModel):
     total_appointments: int

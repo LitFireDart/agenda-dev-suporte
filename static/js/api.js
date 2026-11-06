@@ -152,5 +152,11 @@ const API = {
 
   async getStats() {
     return this.request('/api/stats');
+  },
+
+  async getContributions(year = null) {
+    const params = new URLSearchParams({ tz_offset: String(new Date().getTimezoneOffset()) });
+    if (year) params.append('year', year);
+    return this.request(`/api/stats/contributions?${params.toString()}`);
   }
 };
