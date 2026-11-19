@@ -1,11 +1,3 @@
-/**
- * DevProgress - gráfico de tarefas concluídas, no estilo do GitHub.
- *
- * Recebe o JSON de /api/stats/contributions e desenha:
- *  - cartões de resumo (total, dias ativos, maiores sequências)
- *  - o mapa de calor (uma coluna por semana, começando no domingo)
- *  - a lista do que foi concluído no dia clicado
- */
 class DevProgress {
   constructor({ heatmap, summary, heading, years, detail, onYearChange, onItemClick }) {
     this.el = { heatmap, summary, heading, years, detail };

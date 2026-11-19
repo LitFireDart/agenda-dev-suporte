@@ -13,8 +13,8 @@ router = APIRouter(prefix="/api/history", tags=["Histórico e Auditoria"])
 @router.get("", response_model=List[HistoryLogResponse])
 def get_history(
     limit: int = Query(100, ge=1, le=500),
-    action: Optional[str] = Query(None, description="Filtrar por tipo de ação"),
-    search: Optional[str] = Query(None, description="Pesquisa no histórico"),
+    action: Optional[str] = Query(None, description="Filtrar por usuário esse tipo de ação"),
+    search: Optional[str] = Query(None, description="Pesquisa feita no histórico"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

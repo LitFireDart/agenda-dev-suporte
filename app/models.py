@@ -16,7 +16,7 @@ class User(Base):
     name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=True)
     hashed_password = Column(String(255), nullable=False)
-    role = Column(String(20), default="admin")  # admin, dev, suporte
+    role = Column(String(20), default="admin")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=utc_now)
 
@@ -51,7 +51,7 @@ class Appointment(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=utc_now)
     updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
-    # Momento (UTC) em que o status virou "Concluído". Alimenta o gráfico de progresso.
+    
     completed_at = Column(DateTime, nullable=True)
 
     creator = relationship("User", back_populates="appointments")

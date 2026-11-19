@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevAgenda - Gestão de Compromissos & Suporte</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
   <script>
     try {
       if (localStorage.getItem('devagenda_theme') === 'dark') document.documentElement.classList.add('dark');
@@ -32,14 +33,13 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen selection:bg-blue-600 selection:text-white flex flex-col">
 
+
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
       <div class="flex items-center gap-6">
         <a href="/" class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-xs">
-            <i data-lucide="terminal" class="w-5 h-5"></i>
-          </div>
+          <img src="/static/img/logo.svg" alt="" class="app-logo h-9 w-auto shrink-0">
           <div>
             <span class="text-lg font-black tracking-tight text-slate-900 flex items-center gap-1">
               Dev<span class="text-blue-600">Agenda</span>

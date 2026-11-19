@@ -92,7 +92,6 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
             return None
         header_b64, payload_b64, signature_b64 = parts
 
-        # Validar assinatura
         signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
         expected_sig = hmac.new(
             SECRET_KEY.encode("utf-8"), signing_input, hashlib.sha256
@@ -112,7 +111,6 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except Exception:
         return None
-
 
 def get_token_from_request(
     request: Request,

@@ -114,7 +114,7 @@ async def lifespan(app: FastAPI):
                     end_date=(today + timedelta(days=2)).strftime("%Y-%m-%d"),
                     end_time="20:30",
                     is_all_day=False,
-                    description="Atualização da imagem docker no cluster e validação dos endpoints de autenticação.",
+                    description="Atualização da imagem no cluster e validação dos endpoints de autenticação.",
                     user_id=admin_user.id,
                 ),
                 Appointment(
@@ -181,12 +181,25 @@ STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static"
 )
 
+NO_CACHE = {"Cache-Control": "no-cache"}
+
+class NoCacheStaticFiles(StaticFiles):
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
 @app.get("/")
 def serve_index():
-    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"), headers=NO_CACHE)
 
 @app.get("/login")
 def serve_login():
-    return FileResponse(os.path.join(STATIC_DIR, "login.html"))
+    return FileResponse(os.path.join(STATIC_DIR, "login.html"), headers=NO_CACHE)
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+@app.get("/intro")
+def serve_intro():
+    return FileResponse(os.path.join(STATIC_DIR, "intro.html"), headers=NO_CACHE)
+
+app.mount("/static", NoCacheStaticFiles(directory=STATIC_DIR), name="static")

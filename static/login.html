@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevAgenda - Login do Sistema</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,9 +33,7 @@
   <div class="w-full max-w-md">
 
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 text-blue-600 mb-4 shadow-md">
-        <i data-lucide="terminal" class="w-8 h-8"></i>
-      </div>
+      <img src="/static/img/logo.svg" alt="DevAgenda" class="app-logo h-16 w-auto mx-auto mb-4">
       <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center justify-center gap-2">
         Dev<span class="text-blue-600">Agenda</span>
       </h1>
@@ -183,7 +182,7 @@
         alertBox.textContent = 'Login efetuado com sucesso! Redirecionando...';
 
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = '/intro'; // intro curta e depois o sistema
         }, 500);
 
       } catch (err) {

@@ -57,11 +57,7 @@ def get_dashboard_stats(
 
 
 def _streaks(days: set, today: date):
-    """Retorna (maior sequência, sequência atual) de dias seguidos com conclusões.
 
-    A sequência atual ainda conta se hoje não teve conclusão, mas ontem teve
-    (o dia de hoje ainda não acabou).
-    """
     longest = run = 0
     prev = None
     for d in sorted(days):

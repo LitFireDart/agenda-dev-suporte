@@ -105,8 +105,8 @@ class TestDevAgendaAPI(unittest.TestCase):
 
         headers = {"Authorization": f"Bearer {TestDevAgendaAPI.token}"}
         payload = {
-            "name": "José - Desenvolvedor & Suporte",
-            "email": "jose@empresa.com",
+            "name": "Adminstrador - Desenvolvedor & Suporte",
+            "email": "administrador@empresa.com",
         }
         res = requests.put(
             f"{self.base_url}/api/auth/profile",
@@ -116,14 +116,14 @@ class TestDevAgendaAPI(unittest.TestCase):
         )
         self.assertEqual(res.status_code, 200)
         data = res.json()
-        self.assertEqual(data["name"], "José - Desenvolvedor & Suporte")
-        self.assertEqual(data["email"], "jose@empresa.com")
+        self.assertEqual(data["name"], "Adminstrador - Desenvolvedor & Suporte")
+        self.assertEqual(data["email"], "administrador@empresa.com")
 
         get_res = requests.get(
             f"{self.base_url}/api/auth/me", headers=headers, timeout=3
         )
         self.assertEqual(get_res.status_code, 200)
-        self.assertEqual(get_res.json()["name"], "José - Desenvolvedor & Suporte")
+        self.assertEqual(get_res.json()["name"], "Desenvolvedor & Suporte")
 
     def test_06_create_appointment(self):
 
@@ -225,7 +225,6 @@ class TestDevAgendaAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         data = res.json()
 
-        # A tarefa concluída no test_08 precisa aparecer hoje (fuso UTC-3).
         titles = [i["title"] for i in data["items"]]
         self.assertIn("Correção de Bug Crítico no Checkout", titles)
         self.assertEqual(data["total"], len(data["items"]))
